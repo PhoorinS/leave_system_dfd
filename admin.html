@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สำหรับเจ้าหน้าที่ - ระบบลาออนไลน์</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="brand">
+                <i class="fas fa-calendar-check"></i> ระบบลาออนไลน์
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="btn btn-secondary">หน้าแรก</a>
+                <a href="leave.html" class="btn btn-secondary">แจ้งลา</a>
+                <a href="admin.html" class="btn btn-primary">สำหรับเจ้าหน้าที่</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">รายการรออนุมัติ</h3>
+            </div>
+
+            <div id="pendingList">
+                <p style="text-align: center; color: #666;">กำลังโหลดข้อมูล...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">ประวัติการอนุมัติล่าสุด</h3>
+            </div>
+            <div id="historyList">
+                <!-- History -->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Password protection for admin page
+        const ADMIN_PASSWORD = 'dfd123';
+
+        async function checkAdminAccess() {
+            // Check if already authenticated in this session
+            const isAuthenticated = sessionStorage.getItem('adminAuthenticated');
+
+            if (isAuthenticated === 'true') {
+                // Already authenticated, fetch data and load admin content
+                await fetchData();
+                renderAdminList();
+                return;
+            }
+
+            // Prompt for password
+            const password = prompt('กรุณากรอกรหัสผ่านเจ้าหน้าที่:');
+
+            if (password === ADMIN_PASSWORD) {
+                // Correct password
+                sessionStorage.setItem('adminAuthenticated', 'true');
+                await fetchData();
+                renderAdminList();
+            } else if (password === null) {
+                // User cancelled
+                alert('ยกเลิกการเข้าสู่ระบบ');
+                window.location.href = 'index.html';
+            } else {
+                // Wrong password
+                alert('รหัสผ่านไม่ถูกต้อง');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Load pending requests on init with password check
+        window.addEventListener('load', () => {
+            checkAdminAccess();
+        });
+    </script>
+</body>
+
+</html>

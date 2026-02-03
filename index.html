@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบลาออนไลน์ - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="brand">
+                <i class="fas fa-calendar-check"></i> ระบบลาออนไลน์
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="btn btn-primary">หน้าแรก</a>
+                <a href="leave.html" class="btn btn-secondary">แจ้งลา</a>
+                <a href="admin.html" class="btn btn-outline">สำหรับเจ้าหน้าที่</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <!-- Left Column: Calendar -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="far fa-calendar-alt"></i> ปฏิทินการลา</h3>
+                    <div>
+                        <button class="btn btn-sm btn-outline" id="prevMonth"><i
+                                class="fas fa-chevron-left"></i></button>
+                        <span id="currentMonthYear" style="margin: 0 10px; font-weight: 600;">...</span>
+                        <button class="btn btn-sm btn-outline" id="nextMonth"><i
+                                class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendarHeader">
+                    <div class="calendar-day-header">อา</div>
+                    <div class="calendar-day-header">จ</div>
+                    <div class="calendar-day-header">อ</div>
+                    <div class="calendar-day-header">พ</div>
+                    <div class="calendar-day-header">พฤ</div>
+                    <div class="calendar-day-header">ศ</div>
+                    <div class="calendar-day-header">ส</div>
+                </div>
+                <div class="calendar-grid" id="calendarBody">
+                    <!-- Calendar days will be rendered here by app.js -->
+                </div>
+            </div>
+
+            <!-- Right Column: Stats & Recent -->
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">สถิติการลาเดือนนี้</h3>
+                    </div>
+                    <div id="monthlyStats">
+                        <p style="text-align: center; color: #999;">กำลังโหลด...</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">รายการล่าสุด</h3>
+                    </div>
+                    <ul class="request-list" id="recentRequests">
+                        <!-- Filled by JS -->
+                        <li class="request-item" style="justify-content: center; color: #999;">
+                            ยังไม่มีรายการ
+                        </li>
+                    </ul>
+                </div>
+
+                <a href="leave.html" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    <i class="fas fa-plus"></i> เขียนใบลา
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

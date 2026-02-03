@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เขียนใบลา - ระบบลาออนไลน์</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="brand">
+                <i class="fas fa-calendar-check"></i> ระบบลาออนไลน์
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="btn btn-secondary">หน้าแรก</a>
+                <a href="leave.html" class="btn btn-primary">แจ้งลา</a>
+                <a href="admin.html" class="btn btn-outline">สำหรับเจ้าหน้าที่</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container" style="max-width: 800px;">
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem; text-align: center; color: var(--primary-color);">แบบฟอร์มการลา</h2>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('sick')">ลาป่วย</button>
+                <button class="tab-btn" onclick="switchTab('personal')">ลากิจ</button>
+                <button class="tab-btn" onclick="switchTab('work')">ลาปฏิบัติราชการ</button>
+                <button class="tab-btn" onclick="switchTab('other')">ลาระหว่างชั่วโมงการศึกษา</button>
+            </div>
+
+            <form id="leaveForm" onsubmit="submitLeave(event)">
+                <input type="hidden" id="leaveType" name="leaveType" value="sick">
+
+                <div class="form-group">
+                    <label class="form-label">เรื่อง</label>
+                    <input type="text" class="form-control" id="subject" value="ขอลาป่วย" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">เรียน ผู้อำนวยการศึกษา</label>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">ลำดับเลขที่</label>
+                    <input type="text" class="form-control" id="employeeId" placeholder="กรอกลำดับเลขที่" required>
+                    <small class="text-secondary">กรอกลำดับเลขที่เพื่อดึงข้อมูลอัตโนมัติ</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">ข้าพเจ้า (ชื่อ-สกุล)</label>
+                    <input type="text" class="form-control" id="fullName" required readonly>
+                </div>
+
+                <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">ตำแหน่ง</label>
+                        <input type="text" class="form-control" id="position" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">สังกัด/แผนก</label>
+                        <input type="text" class="form-control" id="department" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">ขอลาเนื่องจาก</label>
+                    <textarea class="form-control" id="reason" rows="3" required></textarea>
+                </div>
+
+                <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" id="dateTimeRow">
+                    <div class="form-group">
+                        <label class="form-label" id="startLabel">ตั้งแต่วันที่</label>
+                        <input type="date" class="form-control" id="startDate" required>
+                        <input type="datetime-local" class="form-control" id="startDateTime" style="display: none;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" id="endLabel">ถึงวันที่</label>
+                        <input type="date" class="form-control" id="endDate" required>
+                        <input type="datetime-local" class="form-control" id="endDateTime" style="display: none;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" id="totalLabel">รวมกำหนด (วัน)</label>
+                    <input type="text" class="form-control" id="totalDays" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" id="contactLabel">ในระหว่างลาจะไปพักผ่อน/ติดต่อได้ที่</label>
+                    <textarea class="form-control" id="contactAddress" rows="2"></textarea>
+                </div>
+
+                <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">บันทึกข้อมูล</button>
+                    <a href="index.html" class="btn btn-secondary">ยกเลิก</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Tab Switching Logic inline for simplicity or move to app.js
+        function switchTab(type) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const subjectInput = document.getElementById('subject');
+            const typeInput = document.getElementById('leaveType');
+
+            typeInput.value = type;
+
+            const titles = {
+                'sick': 'ขอลาป่วย',
+                'personal': 'ขอลากิจ',
+                'work': 'ขอลาปฏิบัติราชการ',
+                'other': 'ขอลาระหว่างชั่วโมงการศึกษา'
+            };
+
+            subjectInput.value = titles[type];
+
+            // Toggle between date and datetime inputs for "other" type
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            const startDateTimeInput = document.getElementById('startDateTime');
+            const endDateTimeInput = document.getElementById('endDateTime');
+            const startLabel = document.getElementById('startLabel');
+            const endLabel = document.getElementById('endLabel');
+            const totalLabel = document.getElementById('totalLabel');
+
+            if (type === 'other') {
+                // Show datetime inputs for hourly leave
+                startDateInput.style.display = 'none';
+                endDateInput.style.display = 'none';
+                startDateTimeInput.style.display = 'block';
+                endDateTimeInput.style.display = 'block';
+                startDateInput.removeAttribute('required');
+                endDateInput.removeAttribute('required');
+                startDateTimeInput.setAttribute('required', 'required');
+                endDateTimeInput.setAttribute('required', 'required');
+                startLabel.textContent = 'เวลาเริ่ม';
+                endLabel.textContent = 'เวลาสิ้นสุด';
+                totalLabel.textContent = 'รวมกำหนด (ชั่วโมง)';
+            } else {
+                // Show date inputs for regular leave
+                startDateInput.style.display = 'block';
+                endDateInput.style.display = 'block';
+                startDateTimeInput.style.display = 'none';
+                endDateTimeInput.style.display = 'none';
+                startDateInput.setAttribute('required', 'required');
+                endDateInput.setAttribute('required', 'required');
+                startDateTimeInput.removeAttribute('required');
+                endDateTimeInput.removeAttribute('required');
+                startLabel.textContent = 'ตั้งแต่วันที่';
+                endLabel.textContent = 'ถึงวันที่';
+                totalLabel.textContent = 'รวมกำหนด (วัน)';
+            }
+
+            // Clear total
+            document.getElementById('totalDays').value = '';
+        }
+
+        // Employee ID lookup
+        const employeeIdInput = document.getElementById('employeeId');
+        if (employeeIdInput) {
+            employeeIdInput.addEventListener('blur', async function () {
+                const employeeId = this.value.trim();
+                if (!employeeId) return;
+
+                try {
+                    // Show loading state
+                    const fullNameInput = document.getElementById('fullName');
+                    const positionInput = document.getElementById('position');
+                    const departmentInput = document.getElementById('department');
+
+                    fullNameInput.value = 'กำลังโหลด...';
+                    positionInput.value = 'กำลังโหลด...';
+                    departmentInput.value = 'กำลังโหลด...';
+
+                    // Get API_URL from app.js or use window.API_URL
+                    const apiUrl = window.API_URL || API_URL;
+
+                    // Fetch employee data from Google Sheets
+                    const response = await fetch(apiUrl + '?action=getEmployee&id=' + encodeURIComponent(employeeId));
+                    const data = await response.json();
+
+                    console.log('Employee lookup response:', data); // Debug log
+
+                    if (data.success && data.employee) {
+                        fullNameInput.value = data.employee.name || '';
+                        positionInput.value = data.employee.position || '';
+                        departmentInput.value = data.employee.department || '';
+                    } else {
+                        // Clear fields if not found
+                        fullNameInput.value = '';
+                        positionInput.value = '';
+                        departmentInput.value = '';
+                        alert('ไม่พบข้อมูลพนักงานลำดับเลขที่นี้\n' + (data.message || ''));
+                    }
+                } catch (error) {
+                    console.error('Error fetching employee data:', error);
+                    document.getElementById('fullName').value = '';
+                    document.getElementById('position').value = '';
+                    document.getElementById('department').value = '';
+                    alert('เกิดข้อผิดพลาดในการดึงข้อมูล: ' + error.message);
+                }
+            });
+        }
+
+        // Calculate days/hours logic
+        document.getElementById('startDate').addEventListener('change', calcDays);
+        document.getElementById('endDate').addEventListener('change', calcDays);
+        document.getElementById('startDateTime').addEventListener('change', calcDateTimeHours);
+        document.getElementById('endDateTime').addEventListener('change', calcDateTimeHours);
+
+        function calcDays() {
+            const start = new Date(document.getElementById('startDate').value);
+            const end = new Date(document.getElementById('endDate').value);
+            if (start && end && end >= start) {
+                const diffTime = Math.abs(end - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                document.getElementById('totalDays').value = diffDays;
+            } else {
+                document.getElementById('totalDays').value = 0;
+            }
+        }
+
+        function calcDateTimeHours() {
+            const startDateTime = document.getElementById('startDateTime').value;
+            const endDateTime = document.getElementById('endDateTime').value;
+
+            if (!startDateTime || !endDateTime) {
+                document.getElementById('totalDays').value = '';
+                return;
+            }
+
+            // Parse datetime strings
+            const start = new Date(startDateTime);
+            const end = new Date(endDateTime);
+
+            if (end <= start) {
+                document.getElementById('totalDays').value = 'เวลาไม่ถูกต้อง';
+                return;
+            }
+
+            // Calculate difference in milliseconds
+            const diffMs = end - start;
+
+            // Convert to total hours (including fractional hours)
+            const totalHours = diffMs / (1000 * 60 * 60);
+
+            // Calculate days and remaining hours (1 day = 8 hours)
+            const days = Math.floor(totalHours / 8);
+            const remainingHours = totalHours % 8;
+            const hours = Math.floor(remainingHours);
+            const minutes = Math.round((remainingHours - hours) * 60);
+
+            // Build display string
+            let result = '';
+            if (days > 0) {
+                result += `${days} วัน `;
+            }
+            if (hours > 0) {
+                result += `${hours} ชม. `;
+            }
+            if (minutes > 0) {
+                result += `${minutes} นาที`;
+            }
+
+            // If result is empty, show total hours
+            if (result.trim() === '') {
+                result = '0 ชม.';
+            }
+
+            document.getElementById('totalDays').value = result.trim();
+        }
+    </script>
+</body>
+
+</html>
